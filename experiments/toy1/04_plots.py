@@ -3,6 +3,7 @@ import sys
 import pathlib
 import json
 import argparse
+from xmlrpc.client import boolean
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -25,6 +26,13 @@ if __name__ == '__main__':
         'privileged_policy',
         type=str,
         choices=cfg['privileged_policies'].keys(),
+    )
+
+    parser.add_argument(
+        '-k', '--kallus',
+        type=bool,
+        help = 'Add Kallus et al experiment to the plot',
+        default=False,
     )
     args = parser.parse_args()
 
@@ -231,7 +239,7 @@ if __name__ == '__main__':
     for i, nobs in enumerate(nobss):
 
         test = 'Wilcoxon'
-        deviation = 'std'  # 'sem'
+        deviation = 'sem' #'std'
         confidence_level = 0.05
 
         ### Jensen-Shannon ###
@@ -311,7 +319,27 @@ if __name__ == '__main__':
         ax.set_title(f"reward")
         ax.set_xlabel('nints (log scale)')
         ax.set_xscale('log', base=2)
-        # ax.legend()
+        ax.legend()
+
+        
+        if args.kallus and nobs == 512:
+        
+            with open(f"experiments/toy1/results/kallus/{privileged_policy}.npy", 'rb') as f:
+                rewards_kallus = np.load(f)
+
+            test_kallus_augm = [run_test(test, rewards_kallus[:, j], r_augm[:, i, j], alpha=confidence_level) for j in range(len(nints))]
+            # plot significative difference as dots
+            y = ymax + 0.155 * (ymax-ymin)
+            x = np.asarray(nints)[np.argwhere(test_kallus_augm)]
+            ax.scatter(x, y * np.ones_like(x), s=10, c='tab:red', marker='^')
+
+            # mean and standard error
+            mean0, low0, high0 = compute_central_tendency_and_error('mean', deviation, rewards_kallus)
+
+            # plot reward curves
+            plot_mean_lowhigh(ax, nints, mean0, low0, high0, label="Kallus et al", color="tab:red")
 
         fig.savefig(plotsdir / f"{privileged_policy}_reward_nobs_{nobs}.pdf", bbox_inches='tight', pad_inches=0)
+
+
         plt.close(fig)
