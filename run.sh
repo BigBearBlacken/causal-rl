@@ -1,4 +1,5 @@
 #! /bin/bash
+source activate torch_110
 GPU=0
 
 for EXPERT in noisy_good perfect_good perfect_bad random strong_bad_bias strong_good_bias; do

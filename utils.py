@@ -16,7 +16,7 @@ def print_log(str, logfile=None):
 def kl_div(p, q, ndims: int=1):
 #     div = torch.nn.functional.kl_div(p, q, reduction='none')
     div = p * (torch.log(p) - torch.log(q))
-    div[p == 0] = 0  # NaNs quick fix
+    div[p == 0] = torch.tensor(0)  # NaNs quick fix
     dims = [i for i in range(-1, -(ndims+1), -1)]
     div = div.sum(dims)
     return div

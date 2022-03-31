@@ -214,7 +214,8 @@ class AugmentedModel(torch.nn.Module):
                 log_prob = log_prob + log_q_orda_hprev
             else:
                 # (batch_size, )
-                log_prob = torch.where(log_prob.isinf(), log_prob, log_prob + log_q_orda_hprev)  # bugfix, otherwise NaNs will appear
+                # BUG isinf 还是isnan?
+                log_prob = torch.where(torch.isinf(log_prob), log_prob, log_prob + log_q_orda_hprev)  # bugfix, otherwise NaNs will appear
 
             # h = (o_0, r_0, d_0, a_0, ..., o_t, r_t, d_t, a_t)
 

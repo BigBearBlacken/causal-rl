@@ -102,7 +102,7 @@ class PomdpEnv(gym.Env):
 
         # Sample from joint multinomial. 
         ind = torch.multinomial(self.p_or_s[s.reshape(-1),:].reshape(s.reshape(-1).size(0), -1), 1)
-        size = torch.tensor(self.p_or_s[0].size(), dtype=torch.float)
+        size = torch.tensor(self.p_or_s[0].size(), dtype=torch.long)
         ro = torch.cat([ind//size[1], ind%size[1]], dim = -1).reshape(-1)
 
         if self.categorical_obs :

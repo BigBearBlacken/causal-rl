@@ -1,1 +1,4 @@
-__pycache__/stat_tests.cpython-36.pyc
+/__pycache__/
+/environment/__pycache__/
+/experiments/toy1/results/
+/experiments/toy1/trained_models/
